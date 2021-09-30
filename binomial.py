@@ -16,6 +16,8 @@ def binomial(x, args):
 	k = args
 	if x <= 0:
 		x = 1e-12
+	if x >= 1:
+		x = 1 - 1e-12
 	nLL = -(np.sum(k)*np.log(x) + (len(k)-np.sum(k))*np.log(1-x))
 	#print('nLL: {}'.format(nLL))
 	return nLL
@@ -25,7 +27,7 @@ if __name__ == '__main__':
 	# generate bernoulli distributed data with p = 0.2
 	# we want to identify p using numeric MLE
 	n = 1000
-	sample_data = np.random.binomial(n=1, p=0.2, size=n)
+	sample_data = np.random.binomial(n=1, p=0.8, size=n)
 	print('data: {}'.format(sample_data))
 
 	# analytic form of p from algebraic MLE
