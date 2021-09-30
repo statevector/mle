@@ -3,6 +3,7 @@ import pandas as pd
 from scipy import optimize
 
 np.random.seed(1234)
+Nfeval = 1
 
 def gaussian(x, args):
 	mean = args[0]
@@ -12,11 +13,10 @@ def gaussian(x, args):
 	return nll
 
 def callback(x):
-	'''
-    Callback called after each iteration.
-    x is the current estimated location of the objective minimum.
-	'''
-	print(x)
+	global Nfeval
+	# x is the current parameter vector.
+	print('{}	{}'.format(Nfeval, x))
+	Nfeval += 1
 
 # x-hat = k/n
 def binomial(x, args):
@@ -44,25 +44,31 @@ def poisson(x, args):
 
 if __name__ == '__main__':
 
-	# generate poisson distributed data for \lambda = 3
-	# we want to identify \lambda using MLE
+	# generate poisson distributed data with \lambda = 3
+	# we want to identify \lambda using numeric MLE
 	n = 1000
 	sample_data = np.random.poisson(lam=3, size=n)
 	print(sample_data)
-	print(np.sum(sample_data)/n)
+
+	# analytic form of \lambda from analytic MLE
+	# cross check
+	lam = np.sum(sample_data)/n
+	print(lam)
 
 	# initial guess for \lambda
 	x0 = 1
-	poisson(x0, sample_data)
-
+	q = poisson(x0, sample_data)
+	print(q)
+	
 	# minimize the nLL
+	print('Iter	X1	X2	X3	f(X)')
 	result = optimize.minimize(fun = poisson, 
 		x0 = x0, 
 		args = sample_data, 
-		method = 'L-BFGS-B',
-		bounds = ((0, 10),),
+		method = 'BFGS', # 'L-BFGS-B',
+		#bounds = ((0, 10),),
 		callback = callback,
-		options = {'maxiter': 10000, 'disp':True})
+		options = {'maxiter': 10000, 'disp': True})
 
 	print("Solution: x=%f" % result.x)
 
