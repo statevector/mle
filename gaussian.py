@@ -14,10 +14,13 @@ def callback(x):
 
 def gaussian(x, args):
 	k = args
-	mean = x[0]
+	mu = x[0]
 	sd = x[1]
 	# Calculate the negative log likelihood
-	nLL = -np.sum(norm.logpdf(k, loc=mean, scale=sd))
+	#nLL = -np.sum(norm.logpdf(k, loc=mu, scale=sd))
+	#print(nLL)
+	nLL = 1/2*len(k)*np.log(2*np.pi*sd**2) + 1/(2*sd**2)*np.sum((k-mu)**2)
+	#print(nLL)
 	return nLL
 
 if __name__ == '__main__':
