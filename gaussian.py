@@ -18,7 +18,6 @@ def gaussian(x, args):
 	sd = x[1]
 	# Calculate the negative log likelihood
 	#nLL = -np.sum(norm.logpdf(k, loc=mu, scale=sd))
-	#print(nLL)
 	nLL = 1/2*len(k)*np.log(2*np.pi*sd**2) + 1/(2*sd**2)*np.sum((k-mu)**2)
 	#print(nLL)
 	return nLL
@@ -54,21 +53,29 @@ if __name__ == '__main__':
 		options = {'maxiter': 10000, 'disp': True})
 
 	print('Solution: x = {}'.format(result.x))
+	
+	# plot the nLL
+	import matplotlib.pyplot as plt
+	xlist = np.arange(1.0, 3, 0.01)
+	ylist = np.arange(1.0, 3, 0.01)
+	X, Y = np.meshgrid(xlist, ylist)
+		
+	Z = []
+	for ix, x in enumerate(xlist):
+		Z.append([])
+		for y in ylist:
+			nll = gaussian([x, y], sample_data)
+			Z[ix].append(nll)
+	Z = np.array(Z)
 
-	# # plot the nLL
-	# x = np.arange(0, 1, 0.01)
-	# y = []
-	# for x0 in x:
-	# 	val = binomial(x0, sample_data)
-	# 	y.append(val)
-
-	# import matplotlib.pyplot as plt
-	# plt.plot(x, y, 'r-', label='nLL(x)')
-	# plt.vlines(result.x[0], 0, 2000, linestyle='--', label='x0')
-	# plt.ylim([0, 2000])
-	# plt.title('Negative Log-Likelihood')
-	# plt.xlabel('x')
-	# plt.ylabel('nLL(x)')
-	# plt.legend(loc='best')
-	# plt.show()
+	fig, ax = plt.subplots(1,1)
+	cp = ax.contour(xlist, ylist, Z, levels=100)
+	plt.plot(result.x[0], result.x[1], marker='*', lw=0, color='red', label='min(nLL)')
+	plt.plot(2, 2, marker='*', lw=0, color='black', label='truth')
+	fig.colorbar(cp) # Add a colorbar to a plot
+	ax.set_title('Negative Log-Likelihood')
+	ax.set_xlabel('mu')
+	ax.set_ylabel('sigma')
+	ax.legend(loc='best')
+	plt.show()
 
